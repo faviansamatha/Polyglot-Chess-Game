@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Testing the server...</title>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <!-- <script type=text/javascript>
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+          </script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src= "{{url_for('static',filename='chessboardLibrary/js/chessboard-1.0.0.js')}}"></script>
+        <link rel="stylesheet" href= "{{url_for('static',filename='chessboardLibrary/css/chessboard-1.0.0.css')}}">
+    </head>
+    
+    <body>
+        <div id="board" style="width: 600px"></div>
+        <button id="startBtn">Start Position</button>
+        <button id="clearBtn">Clear Board</button>
+    </body>
+    <script src= "{{url_for('static',filename='chessboard.js')}}"></script>
+
+</html>
+
