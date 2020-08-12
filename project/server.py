@@ -98,8 +98,41 @@ class ChessState:
         return False
         # Checks if it wants to take a pie
 
-    # Checks legal queen moves
     # Checks legal knight moves
+    def knightMoves(self,piece,old_pos,new_pos):
+        old_file = old_pos[0]
+        new_file = new_pos[0]
+        old_rank = old_pos[1]
+        new_rank = new_pos[1]
+        colour = piece[0]
+        opponent = None
+        if colour =='w':
+            opponent = 'b'
+        else:
+            opponent ='w'
+        pieceType = piece[1]
+        file_difference = ord(new_file) - ord(old_file)
+        rank_difference = int(new_rank) - int(old_rank)
+
+class Knight:
+    def __init__(self, old_pos):
+        cur_rank_int = ord(old_pos[0])
+        cur_file_int = ord(old_pos[1])
+        pos_differences = [-1,1,2,-2]
+        pos_moves = []
+
+        for i in pos_differences:
+            for j in pos_differences:
+                if abs(i) + abs(j) == 3:
+                    index1 = chr(cur_rank_int + i)
+                    index2 = chr(cur_file_int + j)
+                    index = index1+index2
+                    if index not in pos_moves: 
+                        pos_moves.append(index)
+        self.pos_moves = pos_moves
+        self.pos_attacks = pos_attcks
+
+    # Checks legal queen moves
     # Checks legal bishop moves
     # Checks legal Rook moves
     # Checks Catling Moving

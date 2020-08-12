@@ -41,11 +41,6 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
     console.log('Source: ' + source)
     console.log('Target: ' + target)
-    // console.log('Piece: ' + piece)
-    // console.log('New position: ' + Chessboard.objToFen(newPos))
-    // console.log('Old position: ' + Chessboard.objToFen(oldPos))
-    // console.log('Orientation: ' + orientation)
-    // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     console.log(piece[0])
 
     if(target != 'offboard')
@@ -77,20 +72,6 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         
     }
-    // board.position(oldPos);
 
-   
-    // var test = Math.floor(Math.random()*2);
-    // var booltest = false;
-    // if(test ===1){
-    //     booltest = true;
-    // }
-    // console.log(booltest);
-    // if(booltest){
-    //     return 'snapback'
-    // }
-    // else{
-        
-    // }
 }
 
