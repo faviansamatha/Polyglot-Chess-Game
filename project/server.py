@@ -1,5 +1,29 @@
 from flask import Flask, render_template, request
 import json
+import ctypes
+import numpy
+import glob
+
+libfile = glob.glob('build/*/engine*.so')[0]
+
+
+lib = ctypes.CDLL(libfile)
+
+
+
+lib.sendMove.argtypes = (ctypes.c_char_p,)
+lib.sendMove.restype = (ctypes.c_char_p)
+
+def hello(name):
+    pResult = lib.sendMove(name)
+    result = pResult.decode("utf-8")
+    return result
+
+def test():
+    frank = "Frank"
+    pName = ctypes.c_char_p(frank.encode('utf-8'))
+    print(hello(pName))
+   
 
 wCanCastleKing = True
 wCanCastleQueen = True
@@ -787,6 +811,19 @@ def createBoard(data):
     return board
             
 
+# Turns the board to a string for C++ to access
+def stringifyBoard(board):
+    output = ""
+    for i in range(56,48,-1):
+        for j in range(97,105):
+            index = chr(j) + chr(i)
+            output = output + board[index]
+            # output = output + board[index] + " "
+        # output = output + "\n"
+
+    print(output)
+    return output
+
 def printBoard(board):
     for i in range(56,48,-1):
         for j in range(97, 105):
@@ -813,12 +850,14 @@ def isValidMove():
     new_pos = data['target']
     piece = data['piece']
 
-    old_board = createBoard(old)
-    new_board = createBoard(new)
+    old_board = old
+    new_board = new
+    
     # printBoard(old_board)
     board = ChessState(old_board,new_board)
+    stringifyBoard(board.board)
     output = None
-
+    test()
     #Uncomment below to implement turns
     if piece[0] != turn or board.inCheck(piece[0]):
         output = False

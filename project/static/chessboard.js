@@ -69,7 +69,7 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
         else if (output['results'] == "winner"){
 
 
-            // board.draggable = true;
+            alert("One side won! Please")
 
         }
 
