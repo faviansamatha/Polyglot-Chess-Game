@@ -41,11 +41,12 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
     console.log('Source: ' + source)
     console.log('Target: ' + target)
+    console.log('Piece: ' + piece)
     console.log(piece[0])
 
     if(target != 'offboard')
     {
-        board.draggable = false;
+        // board. = false;
         var data = JSON.stringify({
             old: oldPos, 
             new: newPos,
@@ -66,7 +67,7 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         }
         else{
-            board.draggable = true;
+            // board.draggable = true;
 
         }
 

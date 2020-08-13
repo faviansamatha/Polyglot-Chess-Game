@@ -1,6 +1,3 @@
-from flask import Flask, render_template, request
-import json
-
 wCanCastleKing = True
 wCanCastleQueen = True
 bCanCastleKing = True
@@ -306,7 +303,6 @@ class Bishop:
     def isPossibleMove(self, new_pos):
         return new_pos in self.pos_moves
 
-# Queen Chess Piece
 class Queen: 
     def __init__(self, old_pos, colour,board):
         
@@ -454,7 +450,6 @@ class Queen:
     def isPossibleMove(self, new_pos):
         return new_pos in self.pos_moves
 
-# Could still refactor
 class King:
     def __init__(self, old_pos, colour,board):
         cur_file_int = ord(old_pos[0])
@@ -621,69 +616,3 @@ def printBoard(board):
             index = chr(j) + chr(i)
             print(board[index] + " ", end = '')
         print("")    
-
-
-# import requests
-app = Flask(__name__, template_folder='static')
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/isValidMove', methods=['POST','GET'])
-def isValidMove():
-
-    data = json.loads(request.data)
-    old = data['old']
-    new = data['new']
-    old_pos = data['source']
-    new_pos = data['target']
-    piece = data['piece']
-
-    old_board = createBoard(old)
-    new_board = createBoard(new)
-    # printBoard(old_board)
-    board = ChessState(old_board)
-    output = None
-
-    #Uncomment bellow to implemen tturns
-    if piece[0] != turn:
-        output = False
-    else:
-        if piece[1]=='P':
-            output = board.pawnMoves(piece,old_pos,new_pos)
-        elif piece[1] == 'N':
-            knight = Knight(old_pos,piece[0],board.board)
-            output = knight.isPossibleMove(new_pos)
-        elif piece[1] == 'R':
-            rook = Rook(old_pos,piece[0], board.board)
-            output = rook.isPossibleMove(new_pos)
-        elif piece[1] == 'B':
-            bishop = Bishop(old_pos,piece[0], board.board)
-            output = bishop.isPossibleMove(new_pos)
-        elif piece[1] == 'Q':
-            queen = Queen(old_pos,piece[0], board.board)
-            output = queen.isPossibleMove(new_pos)
-        elif piece[1] == 'K':
-            king = King(old_pos,piece[0], board.board)
-            output = king.isPossibleMove(new_pos)
-
-    if output == True:
-        results = "True"
-        switchTurns()
-    else:
-        results = "False"
-    # new = request.args['new']
-    # print(old)
-    # print(new)
-
-    return json.dumps({'results':results})
-
-
-
-
-if __name__ == '__main__':
-    app.run()
-
-    
