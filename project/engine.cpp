@@ -13,11 +13,104 @@ class ChessState{
 
     public: 
 
+
+    vector<int> piece_i;
+    vector<int> piece_j;
+    int totalMoves;
+    char choseni;
+    char chosenj;
+
     ChessState(int board[SIZE][SIZE],int colour){
 
-            
+        totalMoves = 0;
+        if(colour == -1){
+            for(int i = 0; i < SIZE; i++){
+                for(int j = 0; j < SIZE; j++){
+
+                        if (board[i][j] <= -1){
+                            piece_i.push_back(i);
+                            piece_j.push_back(j);
+                        } 
+                }
+            }
+        }
+        else if(colour == 1){
+            for(int i = 0; i < SIZE; i++){
+                for(int j = 0; j < SIZE; j++){
+
+                        if (board[i][j] >= 1){
+                            piece_i.push_back(i);
+                            piece_j.push_back(j);
+                        } 
+                }
+            }
+        }
+
+        
+        
+        for (int i = 0; i < piece_i.size() ; i ++ ){
+
+            int row = piece_i[i];
+            int col = piece_j[i];
+            if(abs(board[row][col]) == 1  ){
+                    
+                Pawn p = Pawn(row,col,board);
+                totalMoves = totalMoves + p.i_moves.size();
+                
+            }
+            else if (abs(board[row][col]) == 3){
+
+                Knight k = Knight(row,col,board);
+                totalMoves = totalMoves + k.i_moves.size();
+            }
+            else if (abs(board[row][col]) == abs(4)){
+
+                Bishop b = Bishop(row,col,board);
+                totalMoves = totalMoves + b.i_moves.size();
+            }
+            else if (abs(board[row][col]) == abs(5)){
+
+                Rook r = Rook(row,col,board);
+                totalMoves = totalMoves + r.i_moves.size();
+            }
+            else if (abs(board[row][col]) == abs(9)){
+
+                Queen q = Queen(row,col,board);
+                totalMoves = totalMoves + q.i_moves.size();
+            }
+            else if (abs(board[row][col]) == abs(1000)){
+
+                King k = King(row,col,board);
+                totalMoves = totalMoves + k.i_moves.size();
+            }
 
         }
+    
+    }
+
+    void calculateTotalMoves(int board[SIZE][SIZE]){
+
+        
+    }
+
+    // bool inCheck(int board[SIZE][SIZE], int colour){
+
+        
+
+    // }
+
+    void randomMove(){
+
+
+
+    }
+
+    // char * minMax(int depth){
+
+
+    // }
+
+    
         class Pawn{
 
             public: 
@@ -47,7 +140,7 @@ class ChessState{
                             i_moves.push_back(row-1);
                             j_moves.push_back(col);
                         }
-                        if (row == 1 && board[row-1][col] == 0){
+                        if (row == 6 && board[row-2][col] == 0){
                             
                             i_moves.push_back(row-2);
                             j_moves.push_back(col);
@@ -59,7 +152,7 @@ class ChessState{
                             if (check <0 || check >7 || row-1 >7 || row-1 <0){
                                 continue;
                             } 
-                            else if ( board[row-1][check] <1 ){
+                            else if ( board[row-1][check] <0 ){
 
                                 i_moves.push_back(row-1);
                                 j_moves.push_back(check);
@@ -70,11 +163,11 @@ class ChessState{
                     
                     else if (colour == -1)
                     {
-                        if (row+1 <=7 && board[row-1][col] == 0 ){
+                        if (row+1 <=7 && board[row+1][col] == 0 ){
                             i_moves.push_back(row+1);
                             j_moves.push_back(col);
                         }
-                        if (row == 1 && board[row+1][col] == 0){
+                        if (row == 1 && board[row+2][col] == 0){
                             
                             i_moves.push_back(row+2);
                             j_moves.push_back(col);
@@ -86,7 +179,7 @@ class ChessState{
                             if (check <0 || check >7 || row+1 >7 || row+1 <0){
                                 continue;
                             } 
-                            else if ( board[row+1][check] >1 ){
+                            else if ( board[row+1][check] >0 ){
 
                                 i_moves.push_back(row+1);
                                 j_moves.push_back(check);
@@ -1506,6 +1599,7 @@ const char* sendMove(char* sBoard)
     int board[8][8];
     initializeBoard(board);
     convertBoard(sBoard, board);
+    printBoard(board);
 
     char *greeting = alterHello(sBoard);
     return greeting;
@@ -1515,7 +1609,8 @@ const char* sendMove(char* sBoard)
 
 int main(){
 
-    char buffer[129] = "bRbNbBbQbKbBbNbR000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wRwNwBwQwKwBwNwR";
+    // char buffer[129] = "bRbNbBbQbKbBbNbR000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wRwNwBwQwKwBwNwR";
+    char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
     
     int testBoard[8][8];
     initializeBoard(testBoard);
@@ -1527,7 +1622,8 @@ int main(){
 
     convertString(tester, testBoard);
 
-    ChessState* board1 = new ChessState(testBoard,-1);
+    ChessState board1 = ChessState(testBoard,1);
+    cout <<endl<< board1.totalMoves << endl;
 
     // cout << endl << buffer[128];
 
