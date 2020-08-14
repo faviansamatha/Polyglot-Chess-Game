@@ -215,7 +215,7 @@ class ChessState:
 
 
 
-
+#It might error out when it reaches the edge so change this please
 class Pawn: 
     def __init__(self, old_pos, colour, board):
         cur_file_int = ord(old_pos[0])
@@ -230,6 +230,7 @@ class Pawn:
         if(colour == 'w'):
             index2 = chr(cur_rank_int+1)
             index = chr(cur_file_int) + index2
+            # if index2 <= '8' or index2 >= '1':
             if board[index] == "00":     
                 pos_moves.append(index)
             if chr(cur_rank_int) =='2':
