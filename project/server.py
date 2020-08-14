@@ -9,20 +9,28 @@ libfile = glob.glob('build/*/engine*.so')[0]
 
 lib = ctypes.CDLL(libfile)
 
-
-
 lib.sendMove.argtypes = (ctypes.c_char_p,)
 lib.sendMove.restype = (ctypes.c_char_p)
 
-def hello(name):
-    pResult = lib.sendMove(name)
-    result = pResult.decode("utf-8")
+def aiMove(board):
+    pResults = lib.sendMove(board)
+    result = pResults.decode("utf-8")
     return result
+def testMove(board):
+    pMove = ctypes.c_char_p(board.encode('utf-8'))
 
-def test():
-    frank = "Frank"
-    pName = ctypes.c_char_p(frank.encode('utf-8'))
-    print(hello(pName))
+    return aiMove(pMove)
+
+
+# def hello(name):
+#     pResult = lib.sendMove(name)
+#     result = pResult.decode("utf-8")
+#     return result
+
+# def test():
+#     frank = "Frank"
+#     pName = ctypes.c_char_p(frank.encode('utf-8'))
+#     print(hello(pName))
    
 
 wCanCastleKing = True
@@ -230,41 +238,44 @@ class Pawn:
         if(colour == 'w'):
             index2 = chr(cur_rank_int+1)
             index = chr(cur_file_int) + index2
-            # if index2 <= '8' or index2 >= '1':
-            if board[index] == "00":     
-                pos_moves.append(index)
-            if chr(cur_rank_int) =='2':
-                index2 = chr(cur_rank_int+2)
-                index = chr(cur_file_int) + index2
+            if index2 <= '8' and index2 >= '1':
                 if board[index] == "00":     
                     pos_moves.append(index)
-            for i in file_difference:
-                index1 = chr(cur_file_int + i)
-                index2 = chr(cur_rank_int +1)
+                if chr(cur_rank_int) =='2':
+                    index2 = chr(cur_rank_int+2)
+                    index = chr(cur_file_int) + index2
+                    index3 = chr(cur_file_int) + chr(cur_rank_int +1)
+                    if board[index] == "00" and board[index3] == "00":     
+                        pos_moves.append(index)
+                for i in file_difference:
+                    index1 = chr(cur_file_int + i)
+                    index2 = chr(cur_rank_int +1)
 
-                if(index1 < 'a' or index1 > 'h'):
-                    continue
-                index = index1 + index2
-                if(board[index][0] == opponent):
-                    pos_moves.append(index)
+                    if(index1 < 'a' or index1 > 'h'):
+                        continue
+                    index = index1 + index2
+                    if(board[index][0] == opponent):
+                        pos_moves.append(index)
         elif(colour =='b'):
             index2 = chr(cur_rank_int-1)
             index = chr(cur_file_int) + index2
-            if board[index] == "00":
-                pos_moves.append(index)
-            if chr(cur_rank_int) =='7':
-                index2 = chr(cur_rank_int-2)
-                index = chr(cur_file_int) + index2
-                if board[index] == "00":     
+            if index2 <= '8' and index2 >= '1':
+                if board[index] == "00":
                     pos_moves.append(index)
-            for i in file_difference:
-                index1 = chr(cur_file_int + i)
-                index2 = chr(cur_rank_int -1)
-                if(index1 < 'a' or index1 > 'h'):
-                    continue
-                index = index1 + index2
-                if(board[index][0] == opponent):
-                    pos_moves.append(index)
+                if chr(cur_rank_int) =='7':
+                    index2 = chr(cur_rank_int-2)
+                    index = chr(cur_file_int) + index2
+                    index3 = chr(cur_file_int) + chr(cur_rank_int +1)
+                    if board[index] == "00" and board[index3] == "00":     
+                        pos_moves.append(index)
+                for i in file_difference:
+                    index1 = chr(cur_file_int + i)
+                    index2 = chr(cur_rank_int -1)
+                    if(index1 < 'a' or index1 > 'h'):
+                        continue
+                    index = index1 + index2
+                    if(board[index][0] == opponent):
+                        pos_moves.append(index)
         self.pos_moves = pos_moves
         self.pos_attacks = pos_moves
         self.colour = colour
@@ -822,7 +833,7 @@ def stringifyBoard(board):
             # output = output + board[index] + " "
         # output = output + "\n"
 
-    print(output)
+    # print(output)
     return output
 
 def printBoard(board):
@@ -839,7 +850,29 @@ app = Flask(__name__, template_folder='static')
 
 @app.route('/')
 def index():
+    global turn
+    turn = 'w'
     return render_template('index.html')
+
+@app.route('/aiTurn', methods=['POST','GET'])
+def aiTurn():
+    data = json.loads(request.data)
+    databoard = data['board']
+
+    board = ChessState(databoard,databoard)
+    boardToSend = stringifyBoard(board.board)
+    # print(boardToSend)
+    output = testMove(boardToSend)
+    
+    switchTurns()
+    return json.dumps({'moves':output})
+
+    
+@app.route('/newGame')
+def newGame():
+    global turn
+    turn = 'w'
+    return
 
 @app.route('/isValidMove', methods=['POST','GET'])
 def isValidMove():
@@ -856,9 +889,10 @@ def isValidMove():
     
     # printBoard(old_board)
     board = ChessState(old_board,new_board)
-    stringifyBoard(board.board)
+    boardToSend = stringifyBoard(board.board)
+    # print(boardToSend)
     output = None
-    test()
+    # testMove(boardToSend)
     #Uncomment below to implement turns
     if piece[0] != turn or board.inCheck(piece[0]):
         output = False

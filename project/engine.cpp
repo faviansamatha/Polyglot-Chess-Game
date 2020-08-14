@@ -3,8 +3,11 @@
 #include <cstring>
 #include <cstdlib>
 #include <vector>
-
+#include <ctime>
+#include <stdlib.h>
+#include <stdio.h>
 #define SIZE 8
+
 
 using namespace std;
 
@@ -12,10 +15,10 @@ using namespace std;
 class ChessState{
 
     public: 
-
-
     vector<int> piece_i;
     vector<int> piece_j;
+    vector<int> movable_piece_i;
+    vector<int> movable_piece_j;
     int totalMoves;
     char choseni;
     char chosenj;
@@ -45,8 +48,6 @@ class ChessState{
                 }
             }
         }
-
-        
         
         for (int i = 0; i < piece_i.size() ; i ++ ){
 
@@ -55,53 +56,158 @@ class ChessState{
             if(abs(board[row][col]) == 1  ){
                     
                 Pawn p = Pawn(row,col,board);
+
                 totalMoves = totalMoves + p.i_moves.size();
+                if (p.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
                 
             }
             else if (abs(board[row][col]) == 3){
 
-                Knight k = Knight(row,col,board);
-                totalMoves = totalMoves + k.i_moves.size();
+                Knight n = Knight(row,col,board);
+                totalMoves = totalMoves + n.i_moves.size();
+                if (n.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
+
             }
-            else if (abs(board[row][col]) == abs(4)){
+            else if (abs(board[row][col]) == 4){
 
                 Bishop b = Bishop(row,col,board);
                 totalMoves = totalMoves + b.i_moves.size();
+                if (b.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
+                 
+
             }
-            else if (abs(board[row][col]) == abs(5)){
+            else if (abs(board[row][col]) == 5){
 
                 Rook r = Rook(row,col,board);
                 totalMoves = totalMoves + r.i_moves.size();
+                if (r.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
             }
-            else if (abs(board[row][col]) == abs(9)){
+            else if (abs(board[row][col]) == 9){
 
                 Queen q = Queen(row,col,board);
                 totalMoves = totalMoves + q.i_moves.size();
+                if (q.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
             }
-            else if (abs(board[row][col]) == abs(1000)){
+            else if (abs(board[row][col]) == 10000){
 
                 King k = King(row,col,board);
                 totalMoves = totalMoves + k.i_moves.size();
+                if (k.i_moves.size() != 0){
+                    movable_piece_i.push_back(row);
+                    movable_piece_j.push_back(col);
+                }
             }
 
         }
     
     }
 
-    void calculateTotalMoves(int board[SIZE][SIZE]){
 
-        
-    }
+    void randomMove(int &i0, int &j0, int &i, int &j, int board[8][8]){
 
-    // bool inCheck(int board[SIZE][SIZE], int colour){
+        if(movable_piece_i.size() == 0){
+            i = -1;
+            j = -1;
+            return;
+        }
 
-        
+        srand((unsigned) time(0));
+        int random_int = (rand()%movable_piece_i.size());
 
-    // }
+        int row = movable_piece_i[random_int];
+        int col = movable_piece_j[random_int];
 
-    void randomMove(){
+            if(abs(board[row][col]) == 1  ){
+                    
+                Pawn p = Pawn(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%p.i_moves.size());
+                
+                i = p.i_moves[random];
+                j = p.j_moves[random];
+                i0 = p.row_pos;
+                j0 = p.col_pos;
+                return;
+            }
+            else if (abs(board[row][col]) == 3){
 
+                Knight n = Knight(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%n.i_moves.size());
+                
+                i = n.i_moves[random];
+                j = n.j_moves[random];
+                i0 = n.row_pos;
+                j0 = n.col_pos;
+                return;
 
+            }
+            else if (abs(board[row][col]) == 4){
+
+                Bishop b = Bishop(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%b.i_moves.size());
+                
+                i = b.i_moves[random];
+                j = b.j_moves[random];
+                i0 = b.row_pos;
+                j0 = b.col_pos;
+                return;
+
+            }
+            else if (abs(board[row][col]) == 5){
+
+                Rook r = Rook(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%r.i_moves.size());
+                
+                i = r.i_moves[random];
+                j = r.j_moves[random];
+                i0 = r.row_pos;
+                j0 = r.col_pos;
+                return;
+
+            }
+            else if (abs(board[row][col]) == 9){
+
+                Queen q = Queen(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%q.i_moves.size());
+                
+                i = q.i_moves[random];
+                j = q.j_moves[random];
+                i0 = q.row_pos;
+                j0 = q.col_pos;
+                return;
+
+            }
+            else if (abs(board[row][col]) == 10000){
+
+                King k = King(row,col,board);
+                srand((unsigned) time(0));
+                int random = (rand()%k.i_moves.size());
+                
+                i = k.i_moves[random];
+                j = k.j_moves[random];
+                i0 = k.row_pos;
+                j0 = k.col_pos;
+                return;
+            }
 
     }
 
@@ -140,7 +246,7 @@ class ChessState{
                             i_moves.push_back(row-1);
                             j_moves.push_back(col);
                         }
-                        if (row == 6 && board[row-2][col] == 0){
+                        if (row == 6 && board[row-2][col] == 0 && board[row-1][col] == 0){
                             
                             i_moves.push_back(row-2);
                             j_moves.push_back(col);
@@ -167,7 +273,7 @@ class ChessState{
                             i_moves.push_back(row+1);
                             j_moves.push_back(col);
                         }
-                        if (row == 1 && board[row+2][col] == 0){
+                        if (row == 1 && board[row+2][col] == 0 && board[row+1][col] == 0){
                             
                             i_moves.push_back(row+2);
                             j_moves.push_back(col);
@@ -1383,7 +1489,7 @@ const void free_pointer (char* ptr){
     delete ptr; 
 }
 
-
+// Test function for myself
 char* alterHello(char* name){
     char hello[] = "Hello ";
     char excla[] = "!\n";
@@ -1599,10 +1705,29 @@ const char* sendMove(char* sBoard)
     int board[8][8];
     initializeBoard(board);
     convertBoard(sBoard, board);
-    printBoard(board);
+    
+    ChessState board_state = ChessState(board,-1);
+    int i = 0;
+    int j = 0;
+    int i0 = 0;
+    int j0 = 0;
+    board_state.randomMove(i0,j0,i,j,board);
 
-    char *greeting = alterHello(sBoard);
-    return greeting;
+    char o1 = j0 +  97;
+    char o2 = 56 - i0;
+    char o3 = j + 97;
+    char o4 = 56 - i;
+    char* output= new char[5];
+    output[0] = o1;
+    output[1] = o2;
+    output[2] = o3;
+    output[3] = o4;
+    output[4] = 0;
+
+    cout<< output;
+
+    // char *greeting = alterHello(sBoard);
+    return output;
 }
 
 
@@ -1610,20 +1735,24 @@ const char* sendMove(char* sBoard)
 int main(){
 
     // char buffer[129] = "bRbNbBbQbKbBbNbR000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wRwNwBwQwKwBwNwR";
-    char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
+    // char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
     
-    int testBoard[8][8];
-    initializeBoard(testBoard);
+    // int testBoard[8][8];
+    // initializeBoard(testBoard);
     
-    convertBoard(buffer, testBoard);
+    // convertBoard(buffer, testBoard);
 
-    printBoard(testBoard);
-    char* tester = new char[129];
+    // printBoard(testBoard);
+    // char* tester = new char[129];
 
-    convertString(tester, testBoard);
+    // convertString(tester, testBoard);
 
-    ChessState board1 = ChessState(testBoard,1);
-    cout <<endl<< board1.totalMoves << endl;
+    // ChessState board1 = ChessState(testBoard,1);
+    // cout <<endl<< board1.totalMoves << endl;
+
+    // const char* nothing = sendMove(buffer);
+
+    return 0;
 
     // cout << endl << buffer[128];
 

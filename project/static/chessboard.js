@@ -8,8 +8,27 @@ var config = {
 
 
 var board = Chessboard('board', config)
-$('#startBtn').on('click', board.start)
-$('#clearBtn').on('click', board.clear)
+$('#startBtn').on('click', function(){
+
+    $.ajax({
+        type: "POST",
+        url: '/newGame',
+        success: (results)=>{
+           console.log("Starting a new game")
+
+        },
+        error: function(error){
+            console.log(error);
+            console.log("There was an error with the server");
+            // return 'snapback';
+        }
+
+    })
+    board.start
+
+})
+// $('#checkmate').on('click', board.start)
+// $('#clearBtn').on('click', board.clear)
 
 async function isValidMove(outputData){
 
@@ -30,6 +49,26 @@ async function isValidMove(outputData){
         }
     })
 
+}
+
+async function getAiMove(board){
+
+    return $.ajax({
+        contentType: 'application/json;charset=UTF-8',
+        type: "POST",
+        url: '/aiTurn',
+        data: board,
+        dataTye: "json",
+        success: (result)=>{
+           console.log("Success getting ai move")
+
+        },
+        error: function(error){
+            console.log(error);
+            console.log("There was an error with the server");
+            // return 'snapback';
+        }
+    }) 
 }
 
 async function isValidMoveCallback(returnData){
@@ -66,10 +105,22 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
             board.position(oldPos);
 
         }
-        else if (output['results'] == "winner"){
+        else if (output['results'] == "True"){
 
+            console.log("HELLO")
+            var dataBoard = JSON.stringify({ board: board.position()});
+            var aiMoveJ = await getAiMove(dataBoard);
+            var aiMove = JSON.parse(aiMoveJ) ;
 
-            alert("One side won! Please")
+            let from = aiMove['moves'][0] + aiMove['moves'][1]
+            let to = aiMove['moves'][2] + aiMove['moves'][3]  
+            let aiFinalMove = from + '-' + to;
+            board.move(aiFinalMove);
+            console.log(from);
+            console.log(to);
+            console.log(aiMove);
+            console.log(aiFinalMove);
+            
 
         }
 
