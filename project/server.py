@@ -4,9 +4,8 @@ import ctypes
 import numpy
 import glob
 
+#This sets up the 2 functions I use in c++ with ctypes
 libfile = glob.glob('build/*/engine*.so')[0]
-
-
 lib = ctypes.CDLL(libfile)
 
 lib.sendMove.argtypes = (ctypes.c_char_p,)
@@ -15,32 +14,26 @@ lib.sendMove.restype = (ctypes.c_char_p)
 lib.checkIfMate.argtypes = (ctypes.c_char_p,)
 lib.checkIfMate.restype = (ctypes.c_char_p)
 
+#Function for AI Move
 def aiMove(board):
     pResults = lib.sendMove(board)
     result = pResults.decode("utf-8")
     return result
 
+#Function that is called by the routes
 def testMove(board):
     pMove = ctypes.c_char_p(board.encode('utf-8'))
     return aiMove(pMove)
 
+#Function to check checkmate
 def checkMate(board):
     newBoard = ctypes.c_char_p(board.encode('utf-8'))
     pResults = lib.checkIfMate(newBoard)
     result = pResults.decode("utf-8")
     return result
 
-# def hello(name):
-#     pResult = lib.sendMove(name)
-#     result = pResult.decode("utf-8")
-#     return result
 
-# def test():
-#     frank = "Frank"
-#     pName = ctypes.c_char_p(frank.encode('utf-8'))
-#     print(hello(pName))
-   
-
+#For future update when castling is available
 wCanCastleKing = True
 wCanCastleQueen = True
 bCanCastleKing = True
@@ -48,6 +41,7 @@ bCanCastleQueen = True
 pawnEnpassant = None
 turn = 'w'
 
+#Function to switch turns (just incase AI is still waiting)
 def switchTurns(): 
     global turn
     if turn== 'w':
@@ -55,7 +49,7 @@ def switchTurns():
     else:
         turn = 'w'
 
-# A class to represent the previous chess state
+# A class to represent the the chess states (pre-move and post-move)
 class ChessState: 
     def __init__(self, board,future_state):
         self.board = createBoard(board)
@@ -244,10 +238,7 @@ class ChessState:
         return False
 
 
-
-
-
-#It might error out when it reaches the edge so change this please
+#Class for pawn
 class Pawn: 
     def __init__(self, old_pos, colour, board):
         cur_file_int = ord(old_pos[0])
@@ -309,10 +300,7 @@ class Pawn:
         return new_pos in self.pos_moves
 
         
-        
-
-
-
+#Class to represent a knight
 class Knight:
     def __init__(self, old_pos, colour,board):
         
@@ -347,7 +335,7 @@ class Knight:
     def isPossibleMove(self, new_pos):
         return new_pos in self.pos_moves
 
-#Account for first enemy found
+#Class to represent a rook
 class Rook: 
     def __init__(self, old_pos, colour,board):
         cur_file_int = ord(old_pos[0])
@@ -443,7 +431,7 @@ class Rook:
         else:
             return False
 
-
+#Class to represent a bishop
 class Bishop: 
     def __init__(self, old_pos, colour,board):
         cur_file_int = ord(old_pos[0])
@@ -528,7 +516,7 @@ class Bishop:
     def isPossibleMove(self, new_pos):
         return new_pos in self.pos_moves
 
-# Queen Chess Piece
+# Class to represent Queen
 class Queen: 
     def __init__(self, old_pos, colour,board):
         
@@ -676,7 +664,7 @@ class Queen:
     def isPossibleMove(self, new_pos):
         return new_pos in self.pos_moves
 
-# Could still refactor since I just copied queen's code and changed the ranges
+# Class to represent king's movements. Could be improved and refactored
 class King:
     def __init__(self, old_pos, colour,board):
         cur_file_int = ord(old_pos[0])
@@ -833,7 +821,7 @@ class King:
             return True
 
     
-# Creates a board form 
+# Creates a board from the position object from chessboard.js
 def createBoard(data):
     board = {}
     for i in range(97,105):
@@ -871,13 +859,14 @@ def printBoard(board):
 # import requests
 app = Flask(__name__, template_folder='static')
 
-
+# Index route
 @app.route('/')
 def index():
     global turn
     turn = 'w'
     return render_template('index.html')
 
+#Route to check if white is mated
 @app.route('/checkIfMate', methods=['POST','GET'])
 def checkIfMate():
     data = json.loads(request.data)
@@ -899,8 +888,7 @@ def checkIfMate():
         
     return json.dumps({'moves':output, 'legal': legal})
     
-
-
+#
 @app.route('/aiTurn', methods=['POST','GET'])
 def aiTurn():
     data = json.loads(request.data)
@@ -924,13 +912,14 @@ def aiTurn():
     switchTurns()
     return json.dumps({'moves':output, 'legal': legal})
 
-    
+#Sets up new game
 @app.route('/newGame')
 def newGame():
     global turn
     turn = 'w'
     return
 
+#Checks if the move is valid.
 @app.route('/isValidMove', methods=['POST','GET'])
 def isValidMove():
 
@@ -980,9 +969,6 @@ def isValidMove():
         switchTurns()
     else:
         results = "False"
-    # new = request.args['new']
-    # print(old)
-    # print(new)
 
     return json.dumps({'results':results})
 

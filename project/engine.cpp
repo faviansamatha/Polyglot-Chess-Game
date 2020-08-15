@@ -12,6 +12,7 @@
 using namespace std;
 void printBoard(int board[8][8]);
 bool inCheck(int future_board[SIZE][SIZE],int colour);
+
 // A function to immitate a move and returns points if a piece was taken
 int immitateMove( int from_row, int from_col, int to_row, int to_col,  int cur_board[SIZE][SIZE], int future_board[SIZE][SIZE]){
 
@@ -52,11 +53,11 @@ int immitateMove( int from_row, int from_col, int to_row, int to_col,  int cur_b
     return points;
 }
 
+// A function that checks if a king is checked based on whose turn it is
 bool inCheck(int future_board[SIZE][SIZE],int colour){
 
         int king_row = -1;
         int king_col = -1;
-
         if(colour == 1){
 
             for(int i = 0; i < SIZE; i++){
@@ -555,9 +556,7 @@ bool inCheck(int future_board[SIZE][SIZE],int colour){
                     break;
                 }
             }         
-
         }
-
         //Checks bottom-right of the file to see if there are any hostile pieces
         for (int i = 1; i< 8; i++){
 
@@ -567,9 +566,7 @@ bool inCheck(int future_board[SIZE][SIZE],int colour){
             if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
                 break;
             }
-
             if(colour ==1){
-
                 // If its another white piece blocking any threats
                 if(future_board[check_row][check_col] >0){
 
@@ -593,7 +590,6 @@ bool inCheck(int future_board[SIZE][SIZE],int colour){
 
                     break;
                 }
-
             }
             else if(colour ==-1){
 
@@ -627,7 +623,6 @@ bool inCheck(int future_board[SIZE][SIZE],int colour){
             }         
 
         }
-
         // Checks if there is a knight threatening a king
         int possible_places[4] = {-2,-1,1,2};
         for (int i = 0; i < 4; i++){
@@ -657,11 +652,10 @@ bool inCheck(int future_board[SIZE][SIZE],int colour){
                 }
             }
         }
-
         return false;
-
     }
 
+// A class to represent the chess state
 class ChessState{
 
     public: 
@@ -670,10 +664,9 @@ class ChessState{
     vector<int> movable_piece_i;
     vector<int> movable_piece_j;
     int totalMoves;
-    char choseni;
-    char chosenj;
     int turn;
 
+    //Constructor for chess state. Checks all the total moves, all the pieces, and all the movable pieces.
     ChessState(int board[SIZE][SIZE],int colour){
 
         totalMoves = 0;
@@ -700,6 +693,7 @@ class ChessState{
                 }
             }
         }
+        
         for (int i = 0; i < (int)piece_i.size() ; i ++ ){
 
             int row = piece_i[i];
@@ -713,13 +707,6 @@ class ChessState{
                     movable_piece_i.push_back(row);
                     movable_piece_j.push_back(col);
                 }
-                // cout << "For piece at: " << p.row_pos << p.col_pos;
-                // cout << " Total Moves: " << p.i_moves.size() << endl; 
-                // for(int i = 0; i < p.i_moves.size(); i++){
-                // cout << "i moves: "<< p.i_moves[i]  << "j moves: " << p.j_moves[i] << endl << endl;
-                    
-                // }
-                
             }
             else if (abs(board[row][col]) == 3){
 
@@ -729,14 +716,6 @@ class ChessState{
                     movable_piece_i.push_back(row);
                     movable_piece_j.push_back(col);
                 }
-
-                // cout << "For piece at: " << n.row_pos << n.col_pos;
-                // cout << " Total Moves: " << n.i_moves.size() << endl; 
-                // for(int i = 0; i < n.i_moves.size(); i++){
-                // cout << "i moves: "<< n.i_moves[i]  << "j moves: " << n.j_moves[i] << endl << endl;
-                    
-                // }
-
             }
             else if (abs(board[row][col]) == 4){
 
@@ -779,9 +758,7 @@ class ChessState{
 
         }    
     }
-    
-
-    
+    //Does a random move based on board state
     void randomMove(int &i0, int &j0, int &i, int &j, int board[8][8]){
 
         if(movable_piece_i.size() == 0){
@@ -877,6 +854,7 @@ class ChessState{
 
     }
 
+    //Does the minimax algorithm. Has some randomness to it.
     void minMax(int &i0, int &j0, int &i1, int &j1, int board[8][8], int colour){
 
         if(totalMoves == 0){
@@ -1043,6 +1021,7 @@ class ChessState{
 
     }
 
+    //Helper function for the minmax algorithm
     int minMaxSearchStarter(int fromi_ind, int fromj_ind, int toi_ind, int toj_ind, int board[SIZE][SIZE],int colour, int depth){
 
         int output = 0;
@@ -1224,14 +1203,7 @@ class ChessState{
 
     }
 
-    // int minMaxSearchRecursive(int fromi, int fromj, int toi, int toj, int board[SIZE][SIZE],int depth, int colour){
-
-    //     if (depth == MAX_DEPTH){
-
-
-    //     }
-
-    // }
+        //Class for pawn
         class Pawn{
 
             public: 
@@ -1330,6 +1302,8 @@ class ChessState{
                 }
 
         };
+       
+        //Class for Knight
         class Knight{
 
             public: 
@@ -1411,6 +1385,8 @@ class ChessState{
 
                 }
         };
+        
+        //Class for Bishop
         class Bishop{
 
             public: 
@@ -1624,6 +1600,7 @@ class ChessState{
             
         };
 
+        //Class for Rook
         class Rook{
             public:
                 vector<int> i_moves;
@@ -1836,6 +1813,7 @@ class ChessState{
 
         };
 
+        //Class for Queen
         class Queen{
             public: 
                 vector<int> i_moves;
@@ -2215,6 +2193,7 @@ class ChessState{
 
         };
 
+        //Class for King
         class King{
 
             public: 
@@ -2595,33 +2574,11 @@ class ChessState{
 
         }; 
 
-        
-
 };
 
 
-extern "C"
-const void free_pointer (char* ptr){
 
-    delete ptr; 
-}
-
-// Test function for myself
-char* alterHello(char* name){
-    char hello[] = "Hello ";
-    char excla[] = "!\n";
-    // char *greeting = new char[ strlen(name) + strlen(hello) + strlen(excla) + 1 ];
-    char *greeting = new char[( strlen(name) + strlen(hello) + strlen(excla) + 1)];
-    if( greeting == NULL) exit(1);
-    strcpy( greeting , hello);
-    strcat(greeting, name);
-    strcat(greeting, excla);
-
-    return greeting;
-
-
-}
-
+//This initializes the board so we don't access items that doesn't exist
 void initializeBoard(int board[SIZE][SIZE]){
 
     for(int i = 0; i < 8; i++){
@@ -2647,7 +2604,6 @@ void initializeBoard(int board[SIZE][SIZE]){
 //     -9 = Black Queen
 //  10000 = White King
 // -10000 = Black King
-
 // This function converts the string to an 8/8 board
 void convertBoard(char* sBoard, int board[8][8]){
 
@@ -2720,6 +2676,7 @@ void convertBoard(char* sBoard, int board[8][8]){
 
 }
 
+//This prints the board (testing purposes)
 void printBoard(int board[8][8]){
 
     for(int i = 0; i < SIZE; i++){
@@ -2815,6 +2772,7 @@ void convertString( char* sBoard, int board[8][8]){
     sBoard[128] = 0;
 }
 
+//This function will be used by Python to send a move from the AI
 extern "C"
 const char* sendMove(char* sBoard)
 { 
@@ -2828,9 +2786,8 @@ const char* sendMove(char* sBoard)
     int j = 0;
     int i0 = 0;
     int j0 = 0;
-    // board_state.randomMove(i0,j0,i,j,board);
-    board_state.minMax(i0,j0,i,j,board,-1);
 
+    board_state.minMax(i0,j0,i,j,board,-1);
     char o1 = j0 +  97;
     char o2 = 56 - i0;
     char o3 = j + 97;
@@ -2842,16 +2799,13 @@ const char* sendMove(char* sBoard)
     output[3] = o4;
     output[4] = 0;
 
-
-
-    // char *greeting = alterHello(sBoard);
     return output;
 }
 
+//This function will be used by Python to check if the player is mated
 extern "C"
 const char* checkIfMate(char* sBoard)
 { 
-
     int board[8][8];
     initializeBoard(board);
     convertBoard(sBoard, board);
@@ -2874,15 +2828,12 @@ const char* checkIfMate(char* sBoard)
     output[3] = o4;
     output[4] = 0;
 
-
-    // char *greeting = alterHello(sBoard);
     return output;
 }
 
 
-// THis is mostly for testing purposes since I don't directly call engine.cpp
+// THis is mostly for testing purposes since I don't directly call engine.cpp from an executable, but functions from python
 int main(){
-
     char buffer[129] = "bRbN00bQbKbBbNbR0000bPbPbPbPbPbPbB00000000000000bPwB000000000000000000wPwP0000000000wP0000000000wPwP000000wPwPwPwRwNwBwQwK00wNwR";
     // char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
     // char buffer[129] = "bRbNbB0000bKbNbRbP00bPbP00bQ000000000000wN00000000000000wQ00000000bP00000000000000000000wP000000wPwPwPwP00wPwPwPwRwNwB00wKwB00wR";
@@ -2903,7 +2854,6 @@ int main(){
     int j = 0;
     int i0 = 0;
     int j0 = 0;
-    // board_state.randomMove(i0,j0,i,j,testBoard);
     board_state.minMax(i0,j0,i,j,testBoard,-1);
     char o1 = j0 +  97;
     char o2 = 56 - i0;
@@ -2918,20 +2868,6 @@ int main(){
 
     cout<< endl << output;
 
-    
-
-    // cout << endl << inCheck(testBoard,-1) << endl;
-    // char* tester = new char[129];
-
-    // convertString(tester, testBoard);
-
-    // ChessState board1 = ChessState(testBoard,1);
-    // cout <<endl<< board1.totalMoves << endl;
-
-    // const char* nothing = sendMove(buffer);
-
     return 0;
-
-    // cout << endl << buffer[128];
 
 }

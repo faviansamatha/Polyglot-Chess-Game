@@ -1,4 +1,7 @@
 
+//used chessboard.js for the visual display: https://chessboardjs.com/index.html
+
+//Board configuration
 var config = {
     position: 'start',
     draggable: true,
@@ -6,7 +9,7 @@ var config = {
     onDrop: onDrop
 }
 
-
+//Initializing chessboard
 var board = Chessboard('board', config)
 $('#startBtn').on('click', function(){
 
@@ -28,6 +31,8 @@ $('#startBtn').on('click', function(){
     board.start
 
 })
+
+//Button for checkmate
 $('#checkmate').on('click', function(){
 
     $.ajax({
@@ -60,8 +65,8 @@ $('#checkmate').on('click', function(){
     })
 
 })
-// $('#clearBtn').on('click', board.clear)
 
+//Does a post request to check if the move is valid
 async function isValidMove(outputData){
 
     return $.ajax({
@@ -80,9 +85,9 @@ async function isValidMove(outputData){
             // return 'snapback';
         }
     })
-
 }
 
+//Does a POST request to get a move from the engine
 async function getAiMove(board){
 
     return $.ajax({
@@ -92,8 +97,6 @@ async function getAiMove(board){
         data: board,
         dataTye: "json",
         success: (result)=>{
-           console.log("Success getting ai move")
-
         },
         error: function(error){
             console.log(error);
@@ -103,22 +106,16 @@ async function getAiMove(board){
     }) 
 }
 
-async function isValidMoveCallback(returnData){
-    console.log(returnData);
-    return returnData
-}
-
+// async function isValidMoveCallback(returnData){
+//     console.log(returnData);
+//     return returnData
+// }
+//Gets executed when a chess piece is dropped on the board
 async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
-    console.log('Source: ' + source)
-    console.log('Target: ' + target)
-    console.log('Piece: ' + piece)
-    console.log('oldPos: ' + Chessboard.objToFen(oldPos))
-    console.log(piece[0])
-
+    //If t
     if(target != 'offboard')
     {
-        // board. = false;
         var data = JSON.stringify({
             old: oldPos, 
             new: newPos,
@@ -129,19 +126,12 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         var output = await isValidMove(data);
         output = JSON.parse(output);
-        // console.log(output);
-        // console.log(output["results"]);
-
         if(output['results'] === "False"){
 
-
             board.position(oldPos);
-
         }
+
         else if (output['results'] == "True"){
-
-            // console.log("HELLO")
-
             var dataBoard = JSON.stringify({ board: newPos});
             var aiMoveJ = await getAiMove(dataBoard);
 
@@ -149,27 +139,15 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
             var aiMove = JSON.parse(aiMoveJ) ;
 
             if (aiMove['legal'] == "False"){
-
                 alert("Congratulations! You won!")
 
-            }
-            else{
-                
-            
+            }else{              
             let from = aiMove['moves'][0] + aiMove['moves'][1]
             let to = aiMove['moves'][2] + aiMove['moves'][3]  
             let aiFinalMove = from + '-' + to;
             board.move(aiFinalMove);
             }
-            // console.log(from);
-            // console.log(to);
-            // console.log(aiMove);
-            // console.log(aiFinalMove);
-            
-
         }
-
-        
     }
 
 }
