@@ -49,7 +49,7 @@ package ['python3', 'python3-pip', 'python3-dev']  # Python
 #package ['php-cli', 'php-pear']  # PHP
 package 'clang' # Clang C/C++ compiler
 execute 'pip3 install Flask'
-
+execute 'pip3 install numpy'
 # .NET Core
 
 #remote_file '/opt/installers/packages-microsoft-prod.deb' do
