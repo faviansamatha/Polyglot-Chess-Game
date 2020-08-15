@@ -913,11 +913,11 @@ def aiTurn():
     return json.dumps({'moves':output, 'legal': legal})
 
 #Sets up new game
-@app.route('/newGame')
+@app.route('/newGame', methods = ['POST'])
 def newGame():
     global turn
     turn = 'w'
-    return
+    return json.dumps({'Results': "NewGame"})
 
 #Checks if the move is valid.
 @app.route('/isValidMove', methods=['POST','GET'])

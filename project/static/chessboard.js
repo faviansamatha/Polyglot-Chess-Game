@@ -19,7 +19,6 @@ $('#startBtn').on('click', function(){
         url: '/newGame',
         success: (results)=>{
            console.log("Starting a new game")
-
         },
         error: function(error){
             console.log(error);
@@ -28,7 +27,8 @@ $('#startBtn').on('click', function(){
         }
 
     })
-    board.start
+    board.start()
+    
 
 })
 
