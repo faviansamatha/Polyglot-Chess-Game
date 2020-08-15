@@ -10,6 +10,7 @@ var config = {
 var board = Chessboard('board', config)
 $('#startBtn').on('click', function(){
 
+
     $.ajax({
         type: "POST",
         url: '/newGame',
@@ -27,7 +28,38 @@ $('#startBtn').on('click', function(){
     board.start
 
 })
-// $('#checkmate').on('click', board.start)
+$('#checkmate').on('click', function(){
+
+    $.ajax({
+        contentType: 'application/json;charset=UTF-8',
+        type: "POST",
+        url: '/checkIfMate',
+        data: JSON.stringify({ board: board.position()}),
+        dataTye: "json",
+        success: (results)=>{
+
+        },
+        error: function(error){
+            console.log(error);
+            console.log("There was an error with the server");
+            // return 'snapback';
+        }
+
+    }).done(function(data){
+
+        var output = JSON.parse(data);
+        if(output['legal'] == "False"){
+            alert("Yea, you lost and got checkmated");
+        }
+        else{
+
+            var from = output['moves'][0] + output['moves'][1]
+            var to = output['moves'][2] + output['moves'][3]              
+            alert("You are not checkmated. You still have some legal moves. For example " + from + " to " + to)
+        }
+    })
+
+})
 // $('#clearBtn').on('click', board.clear)
 
 async function isValidMove(outputData){
@@ -81,6 +113,7 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
     console.log('Source: ' + source)
     console.log('Target: ' + target)
     console.log('Piece: ' + piece)
+    console.log('oldPos: ' + Chessboard.objToFen(oldPos))
     console.log(piece[0])
 
     if(target != 'offboard')
@@ -96,8 +129,8 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         var output = await isValidMove(data);
         output = JSON.parse(output);
-        console.log(output);
-        console.log(output["results"]);
+        // console.log(output);
+        // console.log(output["results"]);
 
         if(output['results'] === "False"){
 
@@ -107,19 +140,31 @@ async function onDrop(source, target, piece, newPos, oldPos, orientation){
         }
         else if (output['results'] == "True"){
 
-            console.log("HELLO")
-            var dataBoard = JSON.stringify({ board: board.position()});
+            // console.log("HELLO")
+
+            var dataBoard = JSON.stringify({ board: newPos});
             var aiMoveJ = await getAiMove(dataBoard);
+
+
             var aiMove = JSON.parse(aiMoveJ) ;
 
+            if (aiMove['legal'] == "False"){
+
+                alert("Congratulations! You won!")
+
+            }
+            else{
+                
+            
             let from = aiMove['moves'][0] + aiMove['moves'][1]
             let to = aiMove['moves'][2] + aiMove['moves'][3]  
             let aiFinalMove = from + '-' + to;
             board.move(aiFinalMove);
-            console.log(from);
-            console.log(to);
-            console.log(aiMove);
-            console.log(aiFinalMove);
+            }
+            // console.log(from);
+            // console.log(to);
+            // console.log(aiMove);
+            // console.log(aiFinalMove);
             
 
         }

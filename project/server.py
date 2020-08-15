@@ -12,15 +12,23 @@ lib = ctypes.CDLL(libfile)
 lib.sendMove.argtypes = (ctypes.c_char_p,)
 lib.sendMove.restype = (ctypes.c_char_p)
 
+lib.checkIfMate.argtypes = (ctypes.c_char_p,)
+lib.checkIfMate.restype = (ctypes.c_char_p)
+
 def aiMove(board):
     pResults = lib.sendMove(board)
     result = pResults.decode("utf-8")
     return result
+
 def testMove(board):
     pMove = ctypes.c_char_p(board.encode('utf-8'))
-
     return aiMove(pMove)
 
+def checkMate(board):
+    newBoard = ctypes.c_char_p(board.encode('utf-8'))
+    pResults = lib.checkIfMate(newBoard)
+    result = pResults.decode("utf-8")
+    return result
 
 # def hello(name):
 #     pResult = lib.sendMove(name)
@@ -73,7 +81,7 @@ class ChessState:
                     break
         if kingIndex1 == ' ' and kingIndex2 == ' ':
             print("Something went wrong here, a king should always be on the board!!!")
-        # DO THIS PLEASE, BELOW IS WRONG
+
         #Check down file for any hostile pieces
         for i in range(1,8):
             check = kingIndex1 + chr(ord(kingIndex2) +i)
@@ -84,6 +92,8 @@ class ChessState:
             if(self.future[check] == (opponent + 'R')):
                 return True
             if(self.future[check] == (opponent + 'Q')):
+                return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
                 return True
             if(self.future[check][0] == (opponent)):
                 break
@@ -99,6 +109,8 @@ class ChessState:
                 return True
             if(self.future[check] == (opponent + 'Q')):
                 return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
+                return True
             if(self.future[check][0] == (opponent)):
                 break
                 
@@ -113,6 +125,8 @@ class ChessState:
                 return True
             if(self.future[check] == (opponent + 'Q')):
                 return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
+                return True
             if(self.future[check][0] == (opponent)):
                 break
 
@@ -126,6 +140,8 @@ class ChessState:
             if(self.future[check] == (opponent + 'R')):
                 return True
             if(self.future[check] == (opponent + 'Q')):
+                return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
                 return True
             if(self.future[check][0] == (opponent)):
                 break
@@ -146,6 +162,8 @@ class ChessState:
                 return True
             if i ==1 and colour =='w'and self.future[check] == (opponent + 'P'):
                 return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
+                return True
             if(self.future[check][0] == (opponent)):
                 break
 
@@ -163,6 +181,8 @@ class ChessState:
             if (self.future[check] == (opponent + 'Q')):
                 return True
             if i ==1 and colour =='w'and self.future[check] == (opponent + 'P'):
+                return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
                 return True
             if(self.future[check][0] == (opponent)):
                 break
@@ -182,6 +202,8 @@ class ChessState:
                 return True
             if i ==1 and colour =='b'and self.future[check] == (opponent + 'P'):
                 return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
+                return True
             if(self.future[check][0] == (opponent)):
                 break
 
@@ -199,6 +221,8 @@ class ChessState:
             if (self.future[check] == (opponent + 'Q')):
                 return True
             if i ==1 and colour =='b'and self.future[check] == (opponent + 'P'):
+                return True
+            if(i == 1 and self.future[check] == (opponent + 'K')):
                 return True
             if(self.future[check][0] == (opponent)):
                 break
@@ -854,6 +878,29 @@ def index():
     turn = 'w'
     return render_template('index.html')
 
+@app.route('/checkIfMate', methods=['POST','GET'])
+def checkIfMate():
+    data = json.loads(request.data)
+    databoard = data['board']
+
+    board = ChessState(databoard,databoard)
+    boardToSend = stringifyBoard(board.board)
+    print("I am sending this to c++")
+    print(boardToSend)
+    output = checkMate(boardToSend)
+    
+    print("Here is the output: " + output)
+    if(output[3] == '9'):
+    
+        legal = "False"
+    
+    else:
+        legal = "True"
+        
+    return json.dumps({'moves':output, 'legal': legal})
+    
+
+
 @app.route('/aiTurn', methods=['POST','GET'])
 def aiTurn():
     data = json.loads(request.data)
@@ -861,11 +908,21 @@ def aiTurn():
 
     board = ChessState(databoard,databoard)
     boardToSend = stringifyBoard(board.board)
-    # print(boardToSend)
+    print("I am sending this to c++")
+    print(boardToSend)
     output = testMove(boardToSend)
     
+    print("Here is the output: " + output)
+    if(output[3] == '9'):
+    
+        legal = "False"
+    
+    else:
+        legal = "True"
+    
+
     switchTurns()
-    return json.dumps({'moves':output})
+    return json.dumps({'moves':output, 'legal': legal})
 
     
 @app.route('/newGame')
@@ -889,8 +946,9 @@ def isValidMove():
     
     # printBoard(old_board)
     board = ChessState(old_board,new_board)
+    print("validating this move")
     boardToSend = stringifyBoard(board.board)
-    # print(boardToSend)
+    print(boardToSend)
     output = None
     # testMove(boardToSend)
     #Uncomment below to implement turns

@@ -11,6 +11,634 @@
 
 using namespace std;
 
+// A function to immitate a move and returns points if a piece was taken
+int immitateMove( int from_row, int from_col, int to_row, int to_col,  int cur_board[SIZE][SIZE], int future_board[SIZE][SIZE]){
+
+    for(int i = 0; i < SIZE; i++){
+
+        for(int j = 0; j < SIZE; j++){
+
+            future_board[i][j] = cur_board[i][j];
+        }
+
+    }
+    
+    int points = future_board[to_row][to_col];
+    future_board[to_row][to_col] = future_board[from_row][from_col];
+    future_board[from_row][from_col] = 0;
+
+    return points;
+}
+
+bool inCheck(int future_board[SIZE][SIZE],int colour){
+
+        int king_row = -1;
+        int king_col = -1;
+
+        if(colour == 1){
+
+            for(int i = 0; i < SIZE; i++){
+
+                for(int j = 0; j < SIZE; j++){
+
+                    if(future_board[i][j] == 10000){
+                        king_row = i;
+                        king_col = j;
+                        break;
+                    }
+
+                }
+            }
+        }
+
+        else if (colour == -1){
+
+            for (int i = 0; i < SIZE; i++){
+                for(int j = 0; j < SIZE; j++){
+
+                    if (future_board[i][j] == -10000){
+                        king_row = i;
+                        king_col = j;
+                    }
+                }
+            }
+        }
+
+        //Checks right of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row;
+            int check_col = king_col + i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black rook
+                if(future_board[check_row][check_col] == -5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy rook
+                if(future_board[check_row][check_col] == 5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+        
+        //Checks left of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row;
+            int check_col = king_col - i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black rook
+                if(future_board[check_row][check_col] == -5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy rook
+                if(future_board[check_row][check_col] == 5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+        //Checks up the rank to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row -i;
+            int check_col = king_col;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black rook
+                if(future_board[check_row][check_col] == -5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy rook
+                if(future_board[check_row][check_col] == 5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+        //Checks down the rank to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row + i;
+            int check_col = king_col;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black rook
+                if(future_board[check_row][check_col] == -5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy rook
+                if(future_board[check_row][check_col] == 5 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+
+        //Checks top-right of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row-i;
+            int check_col = king_col + i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black bishop
+                if(future_board[check_row][check_col] == -4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                //If there is an enemy pawn
+                else if (i == 1 && future_board[check_row][check_col] == -1){
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy bishop
+                if(future_board[check_row][check_col] == 4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+
+        //Checks top-left of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row-i;
+            int check_col = king_col - i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black bishop
+                if(future_board[check_row][check_col] == -4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                //If there is an enemy pawn
+                else if (i == 1 && future_board[check_row][check_col] == -1){
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy bishop
+                if(future_board[check_row][check_col] == 4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+        //Checks bottom-left of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row+i;
+            int check_col = king_col - i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black bishop
+                if(future_board[check_row][check_col] == -4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy bishop
+                if(future_board[check_row][check_col] == 4){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                //If there is an enemy pawn
+                else if (i == 1 && future_board[check_row][check_col] == 1){
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+
+        //Checks bottom-right of the file to see if there are any hostile pieces
+        for (int i = 1; i< 8; i++){
+
+            int check_row = king_row+i;
+            int check_col = king_col + i;
+
+            if(check_col >=8 || check_col <0 || check_row >=8 || check_row <0){
+                break;
+            }
+
+            if(colour ==1){
+
+                // If its another white piece blocking any threats
+                if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+                // If there is a black bishop
+                if(future_board[check_row][check_col] == -4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == -9){
+
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == -10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+
+            }
+            else if(colour ==-1){
+
+                // If its another black piece blocking any threats
+                if(future_board[check_row][check_col] <0){
+
+                    break;
+                }
+                // If there is an enemy bishop
+                if(future_board[check_row][check_col] == 4 ){
+
+                    return true;
+                }
+                // If there is an enemy queen
+                else if(future_board[check_row][check_col] == 9){
+
+                    return true;
+                }
+                //If there is an enemy pawn
+                else if (i == 1 && future_board[check_row][check_col] == 1){
+                    return true;
+                }
+                else if (i == 1 && future_board[check_row][check_col] == 10000){
+                    return true;
+                }
+                // If there is an opponent's piece blocking it
+                else if(future_board[check_row][check_col] >0){
+
+                    break;
+                }
+            }         
+
+        }
+
+        // Checks if there is a knight threatening a king
+        int possible_places[4] = {-2,-1,1,2};
+        for (int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+
+                if(abs(possible_places[i]) + abs(possible_places[j]) ==3){
+                
+
+                    int knight_row = possible_places[i] + king_row;
+                    int knight_col = possible_places[j] + king_col;
+                    if(knight_row >=8 || knight_row < 0 || knight_col >=8 || knight_row < 0){
+                        continue;
+                    }
+
+                    if(colour == 1){
+                        if(future_board[knight_row][knight_col] == -3){
+                            return true;
+                        }
+                    }
+                    if(colour == -1){
+
+                        if(future_board[knight_row][knight_col] == 3){
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return false;
+
+    }
 
 class ChessState{
 
@@ -22,10 +650,12 @@ class ChessState{
     int totalMoves;
     char choseni;
     char chosenj;
+    int turn;
 
     ChessState(int board[SIZE][SIZE],int colour){
 
         totalMoves = 0;
+        turn = colour;
         if(colour == -1){
             for(int i = 0; i < SIZE; i++){
                 for(int j = 0; j < SIZE; j++){
@@ -49,7 +679,7 @@ class ChessState{
             }
         }
         
-        for (int i = 0; i < piece_i.size() ; i ++ ){
+        for (int i = 0; i < (int)piece_i.size() ; i ++ ){
 
             int row = piece_i[i];
             int col = piece_j[i];
@@ -113,11 +743,11 @@ class ChessState{
                 }
             }
 
-        }
-    
+        }    
     }
+    
 
-
+    
     void randomMove(int &i0, int &j0, int &i, int &j, int board[8][8]){
 
         if(movable_piece_i.size() == 0){
@@ -294,6 +924,23 @@ class ChessState{
 
                     }
 
+                    // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
+
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
+
+                    }
                     
                 }
 
@@ -357,6 +1004,24 @@ class ChessState{
                                     }
                                 }
                         }
+                    }
+
+                    // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
+
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
+
                     }
 
                 }
@@ -551,7 +1216,24 @@ class ChessState{
                         i_moves.push_back(row_check);
                         j_moves.push_back(col_check);
                     }
-                }               
+                }     
+                // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
+
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
+
+                    }          
             }
 
             
@@ -747,7 +1429,23 @@ class ChessState{
                         }
 
                     }
+                    // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
 
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
+
+                    }
 
                 }
 
@@ -1111,6 +1809,23 @@ class ChessState{
                         }
 
                     }
+                    // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
+
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
+
+                    }
             }   
 
         };
@@ -1305,7 +2020,7 @@ class ChessState{
                         }
                     }  
 
-                    // This will check moves down
+                        // This will check moves down
                         obstacle = false;
                         for(int i = 1; i < 2; i++){
 
@@ -1472,6 +2187,23 @@ class ChessState{
                                 i_moves.push_back(row_check);
                                 j_moves.push_back(col_check);
                             }
+
+                    }
+                    // If doing this move would result in a check, it is illegal so remove it from the possible set of moves
+                    for(int i = 0; i < (int)i_moves.size(); i++){
+
+                        int futureboard[8][8];
+                        int to_row = i_moves[i];
+                        int to_col = j_moves[i];
+                        immitateMove(row_pos,col_pos, to_row, to_col,board,futureboard);
+                        
+                        // ChessState chessTest = ChessState(futureboard,colour);
+                        if (inCheck(futureboard,colour) ){
+
+                            i_moves.erase(i_moves.begin() + i);
+                            j_moves.erase(j_moves.begin() + i);
+                            i--;
+                        }
 
                     }
             }
@@ -1730,19 +2462,79 @@ const char* sendMove(char* sBoard)
     return output;
 }
 
+extern "C"
+const char* checkIfMate(char* sBoard)
+{ 
+
+    int board[8][8];
+    initializeBoard(board);
+    convertBoard(sBoard, board);
+    
+    ChessState board_state = ChessState(board,1);
+    int i = 0;
+    int j = 0;
+    int i0 = 0;
+    int j0 = 0;
+    board_state.randomMove(i0,j0,i,j,board);
+
+    char o1 = j0 +  97;
+    char o2 = 56 - i0;
+    char o3 = j + 97;
+    char o4 = 56 - i;
+    char* output= new char[5];
+    output[0] = o1;
+    output[1] = o2;
+    output[2] = o3;
+    output[3] = o4;
+    output[4] = 0;
+
+    cout<< output;
+
+    // char *greeting = alterHello(sBoard);
+    return output;
+}
 
 
+// THis is mostly for testing purposes since I don't directly call engine.cpp
 int main(){
 
     // char buffer[129] = "bRbNbBbQbKbBbNbR000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wRwNwBwQwKwBwNwR";
     // char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
+    // char buffer[129] = "bRbNbB0000bKbNbRbP00bPbP00bQ000000000000wN00000000000000wQ00000000bP00000000000000000000wP000000wPwPwPwP00wPwPwPwRwNwB00wKwB00wR";
+    // char buffer[129] = "bRbNbB0000bKbNbRbP00bPbP00wR000000000000wN00000000000000wQ00000000bP00000000000000000000wP000000wPwPwPwP00wPwPwPwRwNwB00wKwB0000";
+    char buffer[129] = "00bNbBbQ00000000bR00bK0000wP000000000000wQ000000bPwNbP0000000000000000000000000000000000wP000000wPwPwPwP0000wPwPwR00wB00wK00wNwR";
     
-    // int testBoard[8][8];
-    // initializeBoard(testBoard);
-    
-    // convertBoard(buffer, testBoard);
 
-    // printBoard(testBoard);
+
+    int testBoard[8][8];
+    initializeBoard(testBoard);
+    
+    convertBoard(buffer, testBoard);
+
+    printBoard(testBoard);
+    ChessState board_state = ChessState(testBoard,-1);
+    cout <<"Total Moves:" << board_state.movable_piece_i.size();
+    int i = 0;
+    int j = 0;
+    int i0 = 0;
+    int j0 = 0;
+    board_state.randomMove(i0,j0,i,j,testBoard);
+    char o1 = j0 +  97;
+    char o2 = 56 - i0;
+    char o3 = j + 97;
+    char o4 = 56 - i;
+    char* output= new char[5];
+    output[0] = o1;
+    output[1] = o2;
+    output[2] = o3;
+    output[3] = o4;
+    output[4] = 0;
+
+    cout<< output;
+
+    
+
+    // cout << endl << inCheck(testBoard,-1) << endl;
     // char* tester = new char[129];
 
     // convertString(tester, testBoard);
