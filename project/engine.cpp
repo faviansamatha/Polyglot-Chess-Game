@@ -7,13 +7,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #define SIZE 8
-
+#define MAX_DEPTH 8
 
 using namespace std;
-
+void printBoard(int board[8][8]);
+bool inCheck(int future_board[SIZE][SIZE],int colour);
 // A function to immitate a move and returns points if a piece was taken
 int immitateMove( int from_row, int from_col, int to_row, int to_col,  int cur_board[SIZE][SIZE], int future_board[SIZE][SIZE]){
 
+    int next_colour;
+    int colour;
+    if(cur_board[from_row][from_col]==1){
+        next_colour = -1;
+        colour = 1;
+    }
+    else{
+        next_colour = 1;
+        colour = -1;
+    }
     for(int i = 0; i < SIZE; i++){
 
         for(int j = 0; j < SIZE; j++){
@@ -26,6 +37,17 @@ int immitateMove( int from_row, int from_col, int to_row, int to_col,  int cur_b
     int points = future_board[to_row][to_col];
     future_board[to_row][to_col] = future_board[from_row][from_col];
     future_board[from_row][from_col] = 0;
+
+    if(inCheck(future_board, next_colour)){
+        if(colour == 1)
+        {
+            points = points -5;
+        }
+        else{
+        points = points + 5;
+
+        }
+    }
 
     return points;
 }
@@ -678,7 +700,6 @@ class ChessState{
                 }
             }
         }
-        
         for (int i = 0; i < (int)piece_i.size() ; i ++ ){
 
             int row = piece_i[i];
@@ -692,6 +713,12 @@ class ChessState{
                     movable_piece_i.push_back(row);
                     movable_piece_j.push_back(col);
                 }
+                // cout << "For piece at: " << p.row_pos << p.col_pos;
+                // cout << " Total Moves: " << p.i_moves.size() << endl; 
+                // for(int i = 0; i < p.i_moves.size(); i++){
+                // cout << "i moves: "<< p.i_moves[i]  << "j moves: " << p.j_moves[i] << endl << endl;
+                    
+                // }
                 
             }
             else if (abs(board[row][col]) == 3){
@@ -702,6 +729,13 @@ class ChessState{
                     movable_piece_i.push_back(row);
                     movable_piece_j.push_back(col);
                 }
+
+                // cout << "For piece at: " << n.row_pos << n.col_pos;
+                // cout << " Total Moves: " << n.i_moves.size() << endl; 
+                // for(int i = 0; i < n.i_moves.size(); i++){
+                // cout << "i moves: "<< n.i_moves[i]  << "j moves: " << n.j_moves[i] << endl << endl;
+                    
+                // }
 
             }
             else if (abs(board[row][col]) == 4){
@@ -751,6 +785,8 @@ class ChessState{
     void randomMove(int &i0, int &j0, int &i, int &j, int board[8][8]){
 
         if(movable_piece_i.size() == 0){
+            i0 = -1;
+            j0 = -1;
             i = -1;
             j = -1;
             return;
@@ -841,12 +877,361 @@ class ChessState{
 
     }
 
-    // char * minMax(int depth){
+    void minMax(int &i0, int &j0, int &i1, int &j1, int board[8][8], int colour){
 
+        if(totalMoves == 0){
+            i0 = -1;
+            j0 = -1;
+            i1 = -1;
+            j1 = -1;
+            return;
+        }
+        vector<int> fromi;
+        vector<int> fromj;
+        vector<int> toi;
+        vector<int> toj;
+
+        //Grabs all the possible moves from each piece 
+        for (int i = 0; i < (int)piece_i.size() ; i ++ ){
+
+            int row = piece_i[i];
+            int col = piece_j[i];
+            if(abs(board[row][col]) == 1  ){
+                    
+                Pawn p = Pawn(row,col,board);
+
+                for(int i = 0; i < (int)p.i_moves.size(); i++){
+
+                    fromi.push_back(p.row_pos);
+                    fromj.push_back(p.col_pos);
+                      toi.push_back(p.i_moves[i]);
+                      toj.push_back(p.j_moves[i]);
+                }
+                
+            }
+            else if (abs(board[row][col]) == 3){
+
+                Knight n = Knight(row,col,board);
+                
+                for(int i = 0; i < (int)n.i_moves.size(); i++){
+
+                    fromi.push_back(n.row_pos);
+                    fromj.push_back(n.col_pos);
+                      toi.push_back(n.i_moves[i]);
+                      toj.push_back(n.j_moves[i]);
+                }
+                
+
+            }
+            else if (abs(board[row][col]) == 4){
+
+                Bishop b = Bishop(row,col,board);
+                
+                for(int i = 0; i < (int)b.i_moves.size(); i++){
+
+                    fromi.push_back(b.row_pos);
+                    fromj.push_back(b.col_pos);
+                      toi.push_back(b.i_moves[i]);
+                      toj.push_back(b.j_moves[i]);
+                }
+                 
+
+            }
+            else if (abs(board[row][col]) == 5){
+
+                Rook r = Rook(row,col,board);
+                for(int i = 0; i < (int)r.i_moves.size(); i++){
+
+                    fromi.push_back(r.row_pos);
+                    fromj.push_back(r.col_pos);
+                      toi.push_back(r.i_moves[i]);
+                      toj.push_back(r.j_moves[i]);
+                }
+            }
+            else if (abs(board[row][col]) == 9){
+
+                Queen q = Queen(row,col,board);
+                for(int i = 0; i < (int)q.i_moves.size(); i++){
+
+                    fromi.push_back(q.row_pos);
+                    fromj.push_back(q.col_pos);
+                      toi.push_back(q.i_moves[i]);
+                      toj.push_back(q.j_moves[i]);
+                }
+            }
+            else if (abs(board[row][col]) == 10000){
+
+                King k = King(row,col,board);
+                for(int i = 0; i < (int)k.i_moves.size(); i++){
+
+                    fromi.push_back(k.row_pos);
+                    fromj.push_back(k.col_pos);
+                      toi.push_back(k.i_moves[i]);
+                      toj.push_back(k.j_moves[i]);
+                }
+            }
+
+        } 
+
+        vector<int> results;
+        for(int i = 0; i < (int)fromi.size(); i++){
+
+            int result = minMaxSearchStarter(fromi[i],fromj[i],toi[i],toj[i],board, colour, 1);
+
+            results.push_back(result);
+
+        }
+        // White wants to choose the lowest number possible
+        int chosen_index = 0;
+        // vector<int> tie_index;
+        vector<int> pos_index;
+        if(colour == 1){
+            int min_value = 0;
+            for(int i = 0; i < (int)results.size(); i++){
+
+                if(i == 0){
+                    min_value = results[i];
+                    // chosen_index = i;
+                    pos_index.push_back(i);
+
+                }
+                else if (results[i] < min_value){
+                    min_value= results[i];
+                    // chosen_index = i;
+                    pos_index.clear();
+                    pos_index.push_back(i);
+                }
+                else if (results[i] == min_value){
+                    pos_index.push_back(i);
+                }
+            }
+        }
+        //Black wants to choose the highest number possible
+        else if(colour == -1){
+            int max_value = 0;
+            for(int i = 0; i < (int)results.size(); i++){
+
+                if(i == 0){
+                    max_value = results[i];
+                    // chosen_index = i;
+                    pos_index.push_back(i);
+
+                }
+                else if (results[i] > max_value){
+                    max_value= results[i];
+                    chosen_index = i;
+                    pos_index.clear();
+                    pos_index.push_back(i);
+                }
+                else if (results[i] == max_value){
+                    pos_index.push_back(i);
+                }
+            }
+        }
+        srand((unsigned)time(0));
+
+        int random_int = (rand()%pos_index.size());
+        chosen_index = pos_index[random_int];
+
+        i0 = fromi[chosen_index];
+        j0 = fromj[chosen_index];
+        i1 = toi[chosen_index];
+        j1 = toj[chosen_index];
+        return;
+
+        
+
+    }
+
+    int minMaxSearchStarter(int fromi_ind, int fromj_ind, int toi_ind, int toj_ind, int board[SIZE][SIZE],int colour, int depth){
+
+        int output = 0;
+        if (depth > MAX_DEPTH){
+
+            return output;
+        }
+        int next_board[SIZE][SIZE];
+        int next_colour;
+        if(colour == 1){
+            next_colour =-1;
+        }
+        else{
+            next_colour = 1;
+        }
+        output = immitateMove(fromi_ind,fromj_ind,toi_ind,toj_ind,board,next_board);
+
+        ChessState nextState = ChessState(next_board,next_colour);
+        // cout << endl;
+        // printBoard(next_board);
+        // cout << endl;
+
+
+        if(nextState.totalMoves == 0){
+
+            return output; 
+        }
+
+        vector<int> fromi;
+        vector<int> fromj;
+        vector<int> toi;
+        vector<int> toj;
+
+        //Grabs all the possible moves from each piece 
+        for (int i = 0; i < (int)nextState.piece_i.size() ; i ++ ){
+
+            int row = nextState.piece_i[i];
+            int col = nextState.piece_j[i];
+            if(abs(next_board[row][col]) == 1  ){
+                    
+                Pawn p = Pawn(row,col,next_board);
+
+                for(int i = 0; i < (int)p.i_moves.size(); i++){
+
+                    fromi.push_back(p.row_pos);
+                    fromj.push_back(p.col_pos);
+                      toi.push_back(p.i_moves[i]);
+                      toj.push_back(p.j_moves[i]);
+                }
+                
+            }
+            else if (abs(next_board[row][col]) == 3){
+
+                Knight n = Knight(row,col,next_board);
+                
+                for(int i = 0; i < (int)n.i_moves.size(); i++){
+
+                    fromi.push_back(n.row_pos);
+                    fromj.push_back(n.col_pos);
+                      toi.push_back(n.i_moves[i]);
+                      toj.push_back(n.j_moves[i]);
+                }
+                
+
+            }
+            else if (abs(next_board[row][col]) == 4){
+
+                Bishop b = Bishop(row,col,next_board);
+                
+                for(int i = 0; i < (int)b.i_moves.size(); i++){
+
+                    fromi.push_back(b.row_pos);
+                    fromj.push_back(b.col_pos);
+                      toi.push_back(b.i_moves[i]);
+                      toj.push_back(b.j_moves[i]);
+                }
+                 
+
+            }
+            else if (abs(next_board[row][col]) == 5){
+
+                Rook r = Rook(row,col,next_board);
+                for(int i = 0; i < (int)r.i_moves.size(); i++){
+
+                    fromi.push_back(r.row_pos);
+                    fromj.push_back(r.col_pos);
+                      toi.push_back(r.i_moves[i]);
+                      toj.push_back(r.j_moves[i]);
+                }
+            }
+            else if (abs(next_board[row][col]) == 9){
+
+                Queen q = Queen(row,col,next_board);
+                for(int i = 0; i < (int)q.i_moves.size(); i++){
+
+                    fromi.push_back(q.row_pos);
+                    fromj.push_back(q.col_pos);
+                      toi.push_back(q.i_moves[i]);
+                      toj.push_back(q.j_moves[i]);
+                }
+            }
+            else if (abs(next_board[row][col]) == 10000){
+
+                King k = King(row,col,next_board);
+                for(int i = 0; i < (int)k.i_moves.size(); i++){
+
+                    fromi.push_back(k.row_pos);
+                    fromj.push_back(k.col_pos);
+                      toi.push_back(k.i_moves[i]);
+                      toj.push_back(k.j_moves[i]);
+                }
+            }
+
+        }
+        
+            if(next_colour == -1)
+            {
+
+                int max_index = 0;
+                int max_value = 0;
+                vector<int> options;
+                for(int i = 0; i < (int)fromi.size();i++){
+                    int futureBoard[SIZE][SIZE];
+
+                    int result_value = immitateMove(fromi[i],fromj[i],toi[i],toj[i],next_board,futureBoard);
+                    if( i == 0){
+                        // max_index = i;
+                        options.push_back(i);
+                        max_value = result_value;
+                    }
+                    else if(result_value > max_value){
+                        // max_index = i;
+                        options.clear();
+                        options.push_back(i);
+                        max_value = result_value;
+                    }
+                    else if (result_value == max_value){
+                        options.push_back(i);
+                    }
+                }
+                 srand((unsigned)time(0));
+
+                int random_int = (rand()%options.size());
+                max_index = options[random_int];
+                output = output + minMaxSearchStarter(fromi[max_index],fromj[max_index],toi[max_index],toj[max_index], next_board, next_colour, depth+1);
+
+            }
+            else if (next_colour ==1){
+
+                int min_index = 0;
+                int min_value = 0;
+                vector<int> options;
+                for(int i = 0; i < (int)fromi.size();i++){
+                    int futureBoard[SIZE][SIZE];
+                    
+                    int result_value = immitateMove(fromi[i],fromj[i],toi[i],toj[i],next_board,futureBoard);
+                    if( i == 0){
+                        // min_index = i;
+                        options.push_back(i);
+                        min_value = result_value;
+                    }
+                    else if(result_value < min_value){
+                        // min_index = i;
+                        options.clear();
+                        options.push_back(i);
+                        min_value = result_value;
+                    }
+                    else if (result_value == min_value){
+                        options.push_back(i);
+                    }
+                }
+                int random_int = (rand()%options.size());
+                min_index = options[random_int];
+                output = output + minMaxSearchStarter(fromi[min_index],fromj[min_index],toi[min_index],toj[min_index], next_board, next_colour, depth+1);
+            }
+
+
+        return output;
+
+    }
+
+    // int minMaxSearchRecursive(int fromi, int fromj, int toi, int toj, int board[SIZE][SIZE],int depth, int colour){
+
+    //     if (depth == MAX_DEPTH){
+
+
+    //     }
 
     // }
-
-    
         class Pawn{
 
             public: 
@@ -2443,7 +2828,8 @@ const char* sendMove(char* sBoard)
     int j = 0;
     int i0 = 0;
     int j0 = 0;
-    board_state.randomMove(i0,j0,i,j,board);
+    // board_state.randomMove(i0,j0,i,j,board);
+    board_state.minMax(i0,j0,i,j,board,-1);
 
     char o1 = j0 +  97;
     char o2 = 56 - i0;
@@ -2456,7 +2842,7 @@ const char* sendMove(char* sBoard)
     output[3] = o4;
     output[4] = 0;
 
-    cout<< output;
+
 
     // char *greeting = alterHello(sBoard);
     return output;
@@ -2488,7 +2874,6 @@ const char* checkIfMate(char* sBoard)
     output[3] = o4;
     output[4] = 0;
 
-    cout<< output;
 
     // char *greeting = alterHello(sBoard);
     return output;
@@ -2498,11 +2883,11 @@ const char* checkIfMate(char* sBoard)
 // THis is mostly for testing purposes since I don't directly call engine.cpp
 int main(){
 
-    // char buffer[129] = "bRbNbBbQbKbBbNbR000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000wRwNwBwQwKwBwNwR";
+    char buffer[129] = "bRbN00bQbKbBbNbR0000bPbPbPbPbPbPbB00000000000000bPwB000000000000000000wPwP0000000000wP0000000000wPwP000000wPwPwPwRwNwBwQwK00wNwR";
     // char buffer[129] = "bRbNbBbQbKbBbNbRbPbPbPbPbPbPbPbP0000000000000000000000000000000000000000000000000000000000000000wPwPwPwPwPwPwPwPwRwNwBwQwKwBwNwR";
     // char buffer[129] = "bRbNbB0000bKbNbRbP00bPbP00bQ000000000000wN00000000000000wQ00000000bP00000000000000000000wP000000wPwPwPwP00wPwPwPwRwNwB00wKwB00wR";
     // char buffer[129] = "bRbNbB0000bKbNbRbP00bPbP00wR000000000000wN00000000000000wQ00000000bP00000000000000000000wP000000wPwPwPwP00wPwPwPwRwNwB00wKwB0000";
-    char buffer[129] = "00bNbBbQ00000000bR00bK0000wP000000000000wQ000000bPwNbP0000000000000000000000000000000000wP000000wPwPwPwP0000wPwPwR00wB00wK00wNwR";
+    // char buffer[129] = "00bNbBbQ00000000bR00bK0000wP000000000000wQ000000bPwNbP0000000000000000000000000000000000wP000000wPwPwPwP0000wPwPwR00wB00wK00wNwR";
     
 
 
@@ -2513,12 +2898,13 @@ int main(){
 
     printBoard(testBoard);
     ChessState board_state = ChessState(testBoard,-1);
-    cout <<"Total Moves:" << board_state.movable_piece_i.size();
+    cout <<"Total Moves:" << board_state.totalMoves;
     int i = 0;
     int j = 0;
     int i0 = 0;
     int j0 = 0;
-    board_state.randomMove(i0,j0,i,j,testBoard);
+    // board_state.randomMove(i0,j0,i,j,testBoard);
+    board_state.minMax(i0,j0,i,j,testBoard,-1);
     char o1 = j0 +  97;
     char o2 = 56 - i0;
     char o3 = j + 97;
@@ -2530,7 +2916,7 @@ int main(){
     output[3] = o4;
     output[4] = 0;
 
-    cout<< output;
+    cout<< endl << output;
 
     
 
